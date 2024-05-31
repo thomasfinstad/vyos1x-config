@@ -1,0 +1,4 @@
+(test
+ (name test_vyos1x)
+ (libraries vyos1x alcotest)
+ (modes byte exe))

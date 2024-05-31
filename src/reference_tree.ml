@@ -13,6 +13,14 @@ type value_constraint =
     | External of string * string option [@name "exec"]
     [@@deriving yojson]
 
+type child_requirements_type = 
+    | Require of string list [@name "require"]
+    | Conflict of (string * string) [@name "conflict"]
+    | AtLeastOneOf of string list [@name "atLeastOneOf"]
+    | Depend of (string * string) [@name "depend"]
+    [@@deriving to_yojson]
+
+
 type completion_help_type =
     | List of string [@name "list"]
     | Path of string [@name "path"]
@@ -24,6 +32,7 @@ type ref_node_data = {
     constraints: value_constraint list;
     constraint_group: value_constraint list;
     constraint_error_message: string;
+    child_requirements: child_requirements_type list;
     completion_help: completion_help_type list;
     help: string;
     value_help: (string * string) list;
@@ -47,6 +56,7 @@ let default_data = {
     constraints = [];
     constraint_group = [];
     constraint_error_message = "Invalid value";
+    child_requirements = [];
     completion_help = [];
     help = "No help available";
     value_help = [];
@@ -118,7 +128,7 @@ let load_completion_help_from_xml d c =
         match c with
         | Xml.Element (_, _, [Xml.PCData s]) ->
                 l @ [completion_help_type_of_string (Xml.tag c) s]
-        | _ -> raise (Bad_interface_definition "Malformed completion help")
+        | _ -> raise (Bad_interface_definition ("Malformed completion help: " ^ Xml.to_string c))
     in Xml.fold aux [] c in
     let l = d.completion_help in
     let l' = l @ res in
@@ -136,7 +146,7 @@ let load_constraint_from_xml d c =
         | Xml.Element ("validator", [("name", n)], _) ->
             let cs = (External (n, None)) :: d.constraints in
             {d with constraints=cs}
-        | _ -> raise (Bad_interface_definition "Malformed constraint")
+        | _ -> raise (Bad_interface_definition ("Malformed constraint: " ^ Xml.to_string c))
     in Xml.fold aux d c
 
 let load_constraint_group_from_xml d c =
@@ -153,6 +163,35 @@ let load_constraint_group_from_xml d c =
             {d with constraint_group=cs}
         | _ -> raise (Bad_interface_definition "Malformed constraint")
     in Xml.fold aux d c
+
+let load_child_requirements_from_xml data xml =
+    let get_name_attr r = Xml.attrib r "name" in
+
+    let aux d xml =
+        match xml with
+        | Xml.Element ("require", _, _) ->
+            let requires = (Xml.map get_name_attr xml) in
+            {d with child_requirements = ((Require requires) :: d.child_requirements)}
+            
+        | Xml.Element ("conflict", _, _) ->
+
+            let child = get_name_attr xml in
+            let conflicts = (Xml.map get_name_attr xml) in
+            let add_requirements dd conflict = {dd with child_requirements = ((Conflict (child, conflict) ) :: dd.child_requirements)} in
+            List.fold_left add_requirements d conflicts
+
+        | Xml.Element ("atLeastOneOf", _, _) ->
+            let atLeastOneOfs = (Xml.map get_name_attr xml) in
+            {d with child_requirements = ((AtLeastOneOf atLeastOneOfs) :: d.child_requirements)}
+
+        | Xml.Element ("depend", _, _) ->
+            let child = get_name_attr xml in
+            let depends = (Xml.map get_name_attr xml) in
+            let add_requirements dd depend = {dd with child_requirements = ((Depend (child, depend) ) :: dd.child_requirements)} in
+            List.fold_left add_requirements d depends
+
+        | _ -> raise (Bad_interface_definition ("Unknown child requirement: " ^ Xml.to_string_fmt xml)) in
+    Xml.fold aux data xml 
 
 let data_from_xml d x =
     let aux d x =
@@ -171,7 +210,8 @@ let data_from_xml d x =
             {d with priority=Some i}
         | Xml.Element ("hidden", _, _) -> {d with hidden=true}
         | Xml.Element ("secret", _, _) -> {d with secret=true}
-        | _ -> raise (Bad_interface_definition "Malformed property tag")
+        | Xml.Element ("childRequirements", _, _) -> load_child_requirements_from_xml d x
+        | _ -> raise (Bad_interface_definition ("Malformed property tag: " ^ Xml.to_string x))
     in Xml.fold aux d x
 
 let rec insert_from_xml basepath reftree xml =

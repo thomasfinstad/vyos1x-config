@@ -8,6 +8,13 @@ type value_constraint =
     | External of string * string option [@name "exec"]
     [@@deriving yojson]
 
+type child_requirements_type = 
+    | Require of string list [@name "require"]
+    | Conflict of (string * string) [@name "conflict"]
+    | AtLeastOneOf of string list [@name "atLeastOneOf"]
+    | Depend of (string * string) [@name "depend"]
+    [@@deriving to_yojson]
+
 type completion_help_type =
     | List of string [@name "list"]
     | Path of string [@name "path"]
@@ -19,6 +26,7 @@ type ref_node_data = {
     constraints: value_constraint list;
     constraint_group: value_constraint list;
     constraint_error_message: string;
+    child_requirements: child_requirements_type list;
     completion_help: completion_help_type list;
     help: string;
     value_help: (string * string) list;
