@@ -4,3 +4,7 @@ _build/*
 *.install
 
 test/testresults/
+
+# OS
+.directory
+.DS_Store

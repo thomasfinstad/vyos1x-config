@@ -8,12 +8,24 @@ type value_constraint =
     | External of string * string option [@name "exec"]
     [@@deriving yojson]
 
-type child_requirements_type = 
-    | Require of string list [@name "require"]
-    | Conflict of (string * string) [@name "conflict"]
-    | AtLeastOneOf of string list [@name "atLeastOneOf"]
-    | Depend of (string * string) [@name "depend"]
+type child_specification_descendant_type = 
+    | Descendant of (string * child_specification_descendant_type list) [@name "descendant"]
+    | Child of string [@name "child"]
+    | Value of string [@name "value"]
     [@@deriving to_yojson]
+
+type child_specification_one_way_dependant_children_type = {
+    dependants: child_specification_descendant_type list;
+    dependees: child_specification_descendant_type list;
+} [@@deriving to_yojson]
+
+type child_specification_type = {
+    requiredChildren: child_specification_descendant_type list;
+    atLeastOneOf: child_specification_descendant_type list list;
+    mutuallyExclusiveChildren: child_specification_descendant_type list list;
+    mutuallyDependantChildren: child_specification_descendant_type list list;
+    oneWayDependantChildren: child_specification_one_way_dependant_children_type list;
+} [@@deriving to_yojson]
 
 type completion_help_type =
     | List of string [@name "list"]
@@ -26,7 +38,7 @@ type ref_node_data = {
     constraints: value_constraint list;
     constraint_group: value_constraint list;
     constraint_error_message: string;
-    child_requirements: child_requirements_type list;
+    child_specification: child_specification_type option;
     completion_help: completion_help_type list;
     help: string;
     value_help: (string * string) list;

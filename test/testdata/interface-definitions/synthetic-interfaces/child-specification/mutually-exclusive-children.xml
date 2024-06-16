@@ -1,0 +1,65 @@
+<interfaceDefinition>
+    <node name="mutually-exclusive-children">
+        <children>
+            <node name="mutually-exclusive-children-dual">
+                <properties>
+                    <childSpecification>
+                        <mutuallyExclusiveChildren>
+                            <child>mutually-exclusive-children-dual-1</child>
+                            <child>mutually-exclusive-children-dual-2</child>
+                        </mutuallyExclusiveChildren>
+                    </childSpecification>
+                </properties>
+                <children><leafNode name="placeholder"></leafNode></children>
+            </node>
+            <node name="mutually-exclusive-children-tripple">
+                <properties>
+                    <childSpecification>
+                        <mutuallyExclusiveChildren>
+                            <child>mutually-exclusive-children-tripple-1</child>
+                            <child>mutually-exclusive-children-tripple-2</child>
+                            <child>mutually-exclusive-children-tripple-3</child>
+                        </mutuallyExclusiveChildren>
+                    </childSpecification>
+                </properties>
+                <children><leafNode name="placeholder"></leafNode></children>
+            </node>
+            <node name="mutually-exclusive-children-multi-groups">
+                <properties>
+                    <childSpecification>
+                        <mutuallyExclusiveChildren>
+                            <child>mutually-exclusive-children-multi-groups-1.1</child>
+                            <child>mutually-exclusive-children-multi-groups-1.2</child>
+                        </mutuallyExclusiveChildren>
+                        <mutuallyExclusiveChildren>
+                            <child>mutually-exclusive-children-multi-groups-2.1</child>
+                            <child>mutually-exclusive-children-multi-groups-2.2</child>
+                        </mutuallyExclusiveChildren>
+                    </childSpecification>
+                </properties>
+                <children><leafNode name="placeholder"></leafNode></children>
+            </node>
+            <node name="mutually-exclusive-children-multi-level">
+                <properties>
+                    <childSpecification>
+                        <mutuallyExclusiveChildren>
+                            <child>mutually-exclusive-children-multi-level-1.1</child>
+                            <child>mutually-exclusive-children-multi-level-1.2</child>
+                            <descendant name="mutually-exclusive-children-multi-level-2">
+                                <child>mutually-exclusive-children-multi-level-2-2.1</child>
+                                <child>mutually-exclusive-children-multi-level-2-2.2</child>
+                            </descendant>
+                            <descendant name="mutually-exclusive-children-multi-level-3">
+                                <descendant name="mutually-exclusive-children-multi-level-3-3">
+                                    <value>mutually-exclusive-children-multi-level-3-3-3.1</value>
+                                    <value>mutually-exclusive-children-multi-level-3-3-3.2</value>
+                                </descendant>
+                            </descendant>
+                        </mutuallyExclusiveChildren>
+                    </childSpecification>
+                </properties>
+                <children><leafNode name="placeholder"></leafNode></children>
+            </node>
+        </children>
+    </node>
+</interfaceDefinition>

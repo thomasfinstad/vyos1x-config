@@ -1,0 +1,53 @@
+<interfaceDefinition>
+    <node name="at-least-one-of">
+        <children>
+            <node name="at-least-one-of-dual">
+                <properties>
+                    <childSpecification>
+                        <atLeastOneOf>
+                            <child>at-least-one-of-dual-1</child>
+                            <child>at-least-one-of-dual-2</child>
+                        </atLeastOneOf>
+                    </childSpecification>
+                </properties>
+                <children><leafNode name="placeholder"></leafNode></children>
+            </node>
+            <node name="at-least-one-of-multi-groups">
+                <properties>
+                    <childSpecification>
+                        <atLeastOneOf>
+                            <child>at-least-one-of-multi-groups-1.1</child>
+                            <child>at-least-one-of-multi-groups-1.2</child>
+                        </atLeastOneOf>
+                        <atLeastOneOf>
+                            <child>at-least-one-of-multi-groups-2.1</child>
+                            <child>at-least-one-of-multi-groups-2.2</child>
+                        </atLeastOneOf>
+                    </childSpecification>
+                </properties>
+                <children><leafNode name="placeholder"></leafNode></children>
+            </node>
+            <node name="at-least-one-of-multi-level">
+                <properties>
+                    <childSpecification>
+                        <atLeastOneOf>
+                            <child>at-least-one-of-multi-level-1.1</child>
+                            <child>at-least-one-of-multi-level-1.2</child>
+                            <descendant name="at-least-one-of-multi-level-2">
+                                <child>at-least-one-of-multi-level-2-2.1</child>
+                                <child>at-least-one-of-multi-level-2-2.2</child>
+                            </descendant>
+                            <descendant name="at-least-one-of-multi-level-3">
+                                <descendant name="at-least-one-of-multi-level-3-3">
+                                    <child>at-least-one-of-multi-level-3-3-3.1</child>
+                                    <child>at-least-one-of-multi-level-3-3-3.2</child>
+                                </descendant>
+                            </descendant>
+                        </atLeastOneOf>
+                    </childSpecification>
+                </properties>
+                <children><leafNode name="placeholder"></leafNode></children>
+            </node>
+        </children>
+    </node>
+</interfaceDefinition>

@@ -13,12 +13,24 @@ type value_constraint =
     | External of string * string option [@name "exec"]
     [@@deriving yojson]
 
-type child_requirements_type = 
-    | Require of string list [@name "require"]
-    | Conflict of (string * string) [@name "conflict"]
-    | AtLeastOneOf of string list [@name "atLeastOneOf"]
-    | Depend of (string * string) [@name "depend"]
+type child_specification_descendant_type = 
+    | Descendant of (string * child_specification_descendant_type list) [@name "descendant"]
+    | Child of string [@name "child"]
+    | Value of string [@name "value"]
     [@@deriving to_yojson]
+
+type child_specification_one_way_dependant_children_type = {
+    dependants: child_specification_descendant_type list;
+    dependees: child_specification_descendant_type list;
+} [@@deriving to_yojson]
+
+type child_specification_type = {
+    requiredChildren: child_specification_descendant_type list;
+    atLeastOneOf: child_specification_descendant_type list list;
+    mutuallyExclusiveChildren: child_specification_descendant_type list list;
+    mutuallyDependantChildren: child_specification_descendant_type list list;
+    oneWayDependantChildren: child_specification_one_way_dependant_children_type list;
+} [@@deriving to_yojson]
 
 
 type completion_help_type =
@@ -32,7 +44,7 @@ type ref_node_data = {
     constraints: value_constraint list;
     constraint_group: value_constraint list;
     constraint_error_message: string;
-    child_requirements: child_requirements_type list;
+    child_specification: child_specification_type option;
     completion_help: completion_help_type list;
     help: string;
     value_help: (string * string) list;
@@ -56,7 +68,7 @@ let default_data = {
     constraints = [];
     constraint_group = [];
     constraint_error_message = "Invalid value";
-    child_requirements = [];
+    child_specification = None;
     completion_help = [];
     help = "No help available";
     value_help = [];
@@ -136,7 +148,7 @@ let load_completion_help_from_xml d c =
 
 let load_constraint_from_xml d c =
     let aux d c =
-        match c with
+        match c with 
         | Xml.Element ("regex", _, [Xml.PCData s]) ->
             let cs = (Regex s) :: d.constraints in
             {d with constraints=cs}
@@ -164,34 +176,86 @@ let load_constraint_group_from_xml d c =
         | _ -> raise (Bad_interface_definition "Malformed constraint")
     in Xml.fold aux d c
 
-let load_child_requirements_from_xml data xml =
-    let get_name_attr r = Xml.attrib r "name" in
+let load_child_specification_from_xml data xml =
+    let get_cs d =
+        match d.child_specification with
+        | Some cs -> cs
+        | _ -> {requiredChildren=[];atLeastOneOf=[];mutuallyExclusiveChildren=[];oneWayDependantChildren=[];mutuallyDependantChildren=[];} in
 
-    let aux d xml =
+    let rec assemble_descendants data xml =
         match xml with
-        | Xml.Element ("require", _, _) ->
-            let requires = (Xml.map get_name_attr xml) in
-            {d with child_requirements = ((Require requires) :: d.child_requirements)}
-            
-        | Xml.Element ("conflict", _, _) ->
+        | Xml.Element ("child", _, [Xml.PCData s]) ->
+            begin
+                Child s :: data
+            end
+        | Xml.Element ("value", _, [Xml.PCData s]) ->
+            begin
+                Value s :: data
+            end
+        | Xml.Element ("descendant", _, _) ->
+            begin
+                let name = Xml.attrib xml "name" in
+                let res = List.fold_left assemble_descendants [] (Xml.children xml) in
+                Descendant (name, res) :: data
+            end
+        | _ -> 
+            begin
+                raise (Bad_interface_definition ("Unknown child descendant field: " ^ Xml.to_string_fmt xml))
+            end in
+        
 
-            let child = get_name_attr xml in
-            let conflicts = (Xml.map get_name_attr xml) in
-            let add_requirements dd conflict = {dd with child_requirements = ((Conflict (child, conflict) ) :: dd.child_requirements)} in
-            List.fold_left add_requirements d conflicts
-
+    let assemble_spessification data xml =
+        match xml with
+        | Xml.Element ("requiredChildren", _, _) ->
+            begin
+                let descendants = List.fold_left assemble_descendants [] (Xml.children xml) in
+                let cs = get_cs data in
+                {data with child_specification = Some {cs with requiredChildren = cs.requiredChildren @ descendants}}
+            end
         | Xml.Element ("atLeastOneOf", _, _) ->
-            let atLeastOneOfs = (Xml.map get_name_attr xml) in
-            {d with child_requirements = ((AtLeastOneOf atLeastOneOfs) :: d.child_requirements)}
-
-        | Xml.Element ("depend", _, _) ->
-            let child = get_name_attr xml in
-            let depends = (Xml.map get_name_attr xml) in
-            let add_requirements dd depend = {dd with child_requirements = ((Depend (child, depend) ) :: dd.child_requirements)} in
-            List.fold_left add_requirements d depends
+            begin
+                let descendants = List.fold_left assemble_descendants [] (Xml.children xml) in
+                let cs = get_cs data in
+                {data with child_specification = Some {cs with atLeastOneOf = descendants :: cs.atLeastOneOf}}
+            end
+        | Xml.Element ("mutuallyExclusiveChildren", _, _) ->
+            begin
+                let descendants = List.fold_left assemble_descendants [] (Xml.children xml) in
+                let cs = get_cs data in
+                {data with child_specification = Some {cs with mutuallyExclusiveChildren = descendants :: cs.mutuallyExclusiveChildren}}
+            end
+        | Xml.Element ("mutuallyDependantChildren", _, _) ->
+            begin
+                let descendants = List.fold_left assemble_descendants [] (Xml.children xml) in
+                let cs = get_cs data in
+                {data with child_specification = Some {cs with mutuallyDependantChildren = descendants :: cs.mutuallyDependantChildren}}
+            end
+        | Xml.Element ("oneWayDependantChildren", _, _) ->
+            begin
+                let assemble_dependancies oneWayDependantChildren xml =
+                    match xml with
+                    | Xml.Element ("dependants", _, _) ->
+                        begin
+                            let dependants = List.fold_left assemble_descendants [] (Xml.children xml) in
+                            {oneWayDependantChildren with dependants = oneWayDependantChildren.dependants @ dependants} 
+                        end
+                    | Xml.Element ("dependees", _, _) ->
+                        begin
+                            let dependees = List.fold_left assemble_descendants [] (Xml.children xml) in
+                            {oneWayDependantChildren with dependees = oneWayDependantChildren.dependees @ dependees} 
+                        end
+                    | _ -> 
+                        begin
+                            raise (Bad_interface_definition ("Unknown child oneWayDependantChildren field: " ^ Xml.to_string_fmt xml))
+                        end in
+                let cs = get_cs data in
+                let oneWayDependantChildren = {dependants=[];dependees=[]} in
+                let res = List.fold_left assemble_dependancies oneWayDependantChildren (Xml.children xml) in
+                {data with child_specification = Some {cs with oneWayDependantChildren = res :: cs.oneWayDependantChildren}}
+            end
 
         | _ -> raise (Bad_interface_definition ("Unknown child requirement: " ^ Xml.to_string_fmt xml)) in
-    Xml.fold aux data xml 
+    Xml.fold assemble_spessification data xml
 
 let data_from_xml d x =
     let aux d x =
@@ -210,7 +274,7 @@ let data_from_xml d x =
             {d with priority=Some i}
         | Xml.Element ("hidden", _, _) -> {d with hidden=true}
         | Xml.Element ("secret", _, _) -> {d with secret=true}
-        | Xml.Element ("childRequirements", _, _) -> load_child_requirements_from_xml d x
+        | Xml.Element ("childSpecification", _, _) -> load_child_specification_from_xml d x
         | _ -> raise (Bad_interface_definition ("Malformed property tag: " ^ Xml.to_string x))
     in Xml.fold aux d x
 

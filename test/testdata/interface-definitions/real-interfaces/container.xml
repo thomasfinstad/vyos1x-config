@@ -12,28 +12,23 @@
             <regex>[-a-zA-Z0-9]+</regex>
           </constraint>
           <constraintErrorMessage>Container name must be alphanumeric and can contain hyphens</constraintErrorMessage>
-          <childRequirements>
-            <require>
-              <child name="image"/>
-              <child name="test"/>
-            </require>
-            <conflict name="allow_host_networks">
-              <child name="network"/>
-              <child name="test2"/>
-            </conflict>
-            <conflict name="introvert">
-              <child name="extrovert"/>
-              <child name="influencer"/>
-            </conflict>
+          <childSpecification>
+            <requiredChildren>
+              <child>image"</child>
+            </requiredChildren>
+            <mutuallyExclusiveChildren>
+              <child>allow-host-networks</child>
+              <child>network</child>
+            </mutuallyExclusiveChildren>
             <atLeastOneOf>
-              <child name="allow_host_networks"/>
-              <child name="network"/>
+              <child>allow-host-networks</child>
+              <child>network</child>
             </atLeastOneOf>
-            <depend name="gid">
-              <child name="uid"/>
-              <child name="test3"/>
-            </depend>
-          </childRequirements>
+            <oneWayDependantChildren>
+              <dependants><child>gid</child></dependants>
+              <dependees><child>uid</child></dependees>
+            </oneWayDependantChildren>
+          </childSpecification>
         </properties>
         <children>
           <leafNode name="allow-host-networks">
@@ -104,6 +99,12 @@
           <tagNode name="device">
             <properties>
               <help>Add a host device to the container</help>
+              <childSpecification>
+                <requiredChildren>
+                  <child>source</child>
+                  <child>destination</child>
+                </requiredChildren>
+              </childSpecification>
             </properties>
             <children>
               <leafNode name="source">
@@ -141,6 +142,11 @@
                 <regex>[-_a-zA-Z0-9]+</regex>
               </constraint>
               <constraintErrorMessage>Environment variable name must be alphanumeric and can contain hyphen and underscores</constraintErrorMessage>
+              <childSpecification>
+                <requiredChildren>
+                  <child>value</child>
+                </requiredChildren>
+              </childSpecification>
             </properties>
             <children>
               <leafNode name="value">
@@ -214,6 +220,11 @@
                 <regex>[a-z0-9](?:[a-z0-9.-]*[a-z0-9])?</regex>
               </constraint>
               <constraintErrorMessage>Label variable name must be alphanumeric and can contain hyphen, dots and underscores</constraintErrorMessage>
+              <childSpecification>
+                <requiredChildren>
+                  <child>value</child>
+                </requiredChildren>
+              </childSpecification>
             </properties>
             <children>
               <leafNode name="value">
@@ -302,6 +313,12 @@
           <tagNode name="port">
             <properties>
               <help>Publish port to the container</help>
+              <childSpecification>
+                <requiredChildren>
+                  <child>source</child>
+                  <child>destination</child>
+                </requiredChildren>
+              </childSpecification>
             </properties>
             <children>
 <!-- include start from listen-address.xml.i -->
@@ -432,6 +449,12 @@
           <tagNode name="volume">
             <properties>
               <help>Mount a volume into the container</help>
+              <childSpecification>
+                <requiredChildren>
+                  <child>source</child>
+                  <child>destination</child>
+                </requiredChildren>
+              </childSpecification>
             </properties>
             <children>
               <leafNode name="source">

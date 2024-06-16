@@ -24,4 +24,5 @@ depends: [
   "xml-light"
   "pcre"
   "fileutils"
+  "alcotest"
 ]

@@ -1,0 +1,49 @@
+<interfaceDefinition>
+    <node name="required-children">
+        <children>
+            <node name="required-children-single">
+                <properties>
+                    <childSpecification>
+                        <requiredChildren>
+                            <child>required-children-single</child>
+                        </requiredChildren>
+                    </childSpecification>
+                </properties>
+                <children><leafNode name="placeholder"></leafNode></children>
+            </node>
+            <node name="required-children-multiple">
+                <properties>
+                    <childSpecification>
+                        <requiredChildren>
+                            <child>required-children-multiple-1</child>
+                            <child>required-children-multiple-2</child>
+                            <child>required-children-multiple-3</child>
+                        </requiredChildren>
+                    </childSpecification>
+                </properties>
+                <children><leafNode name="placeholder"></leafNode></children>
+            </node>
+            <node name="required-children-multi-level">
+                <properties>
+                    <childSpecification>
+                        <requiredChildren>
+                            <child>required-children-multi-level-1.1</child>
+                            <child>required-children-multi-level-1.2</child>
+                            <descendant name="required-children-multi-level-2">
+                                <child>required-children-multi-level-2-2.1</child>
+                                <child>required-children-multi-level-2-2.2</child>
+                            </descendant>
+                            <descendant name="required-children-multi-level-3">
+                                <descendant name="required-children-multi-level-3-3">
+                                    <child>required-children-multi-level-3-3-3.1</child>
+                                    <child>required-children-multi-level-3-3-3.2</child>
+                                </descendant>
+                            </descendant>
+                        </requiredChildren>
+                    </childSpecification>
+                </properties>
+                <children><leafNode name="placeholder"></leafNode></children>
+            </node>
+        </children>
+    </node>
+</interfaceDefinition>

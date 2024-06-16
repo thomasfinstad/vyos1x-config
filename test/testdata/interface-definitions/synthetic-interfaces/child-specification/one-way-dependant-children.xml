@@ -1,0 +1,91 @@
+<interfaceDefinition>
+    <node name="one-way-dependant-children">
+        <children>
+            <node name="one-way-dependant-children-single">
+                <properties>
+                    <childSpecification>
+                        <oneWayDependantChildren>
+                            <dependants>
+                                <child>one-way-dependant-children-single-dependant</child>
+                            </dependants>
+                            <dependees>
+                                <child>one-way-dependant-children-single-dependee</child>
+                            </dependees>
+                        </oneWayDependantChildren>
+                    </childSpecification>
+                </properties>
+                <children><leafNode name="placeholder"></leafNode></children>
+            </node>
+            <node name="one-way-dependant-children-dual-dependee">
+                <properties>
+                    <childSpecification>
+                        <oneWayDependantChildren>
+                            <dependants>
+                                <child>one-way-dependant-children-dual-dependee-dependant</child>
+                            </dependants>
+                            <dependees>
+                                <child>one-way-dependant-children-dual-dependee-dependee-1</child>
+                                <child>one-way-dependant-children-dual-dependee-dependee-2</child>
+                            </dependees>
+                        </oneWayDependantChildren>
+                    </childSpecification>
+                </properties>
+                <children><leafNode name="placeholder"></leafNode></children>
+            </node>
+            <node name="one-way-dependant-children-dual-dependant">
+                <properties>
+                    <childSpecification>
+                        <oneWayDependantChildren>
+                            <dependants>
+                                <child>one-way-dependant-children-dual-dependant-dependant-1</child>
+                                <child>one-way-dependant-children-dual-dependant-dependant-2</child>
+                            </dependants>
+                            <dependees>
+                                <child>one-way-dependant-children-dual-dependant-dependee</child>
+                            </dependees>
+                        </oneWayDependantChildren>
+                    </childSpecification>
+                </properties>
+                <children><leafNode name="placeholder"></leafNode></children>
+            </node>
+            <node name="one-way-dependant-children-dual">
+                <properties>
+                    <childSpecification>
+                        <oneWayDependantChildren>
+                            <dependants>
+                                <child>one-way-dependant-children-dual-dependant-1</child>
+                                <child>one-way-dependant-children-dual-dependant-2</child>
+                            </dependants>
+                            <dependees>
+                                <child>one-way-dependant-children-dual-dependee-1</child>
+                                <child>one-way-dependant-children-dual-dependee-2</child>
+                            </dependees>
+                        </oneWayDependantChildren>
+                    </childSpecification>
+                </properties>
+                <children><leafNode name="placeholder"></leafNode></children>
+            </node>
+            <node name="one-way-dependant-children-multi-level">
+                <properties>
+                    <childSpecification>
+                        <oneWayDependantChildren>
+                            <dependants>
+                                <child>one-way-dependant-children-multi-level-dependant-1</child>
+                                <descendant name="one-way-dependant-children-multi-level-dependant-2">
+                                    <child>one-way-dependant-children-multi-level-dependant-2.1</child>
+                                </descendant>
+                            </dependants>
+                            <dependees>
+                                <child>one-way-dependant-children-multi-level-dependee-1</child>
+                                <descendant name="one-way-dependant-children-multi-level-dependee-2">
+                                    <child>one-way-dependant-children-multi-level-dependee-2.1</child>
+                                </descendant>
+                            </dependees>
+                        </oneWayDependantChildren>
+                    </childSpecification>
+                </properties>
+                <children><leafNode name="placeholder"></leafNode></children>
+            </node>
+        </children>
+    </node>
+</interfaceDefinition>

@@ -1,0 +1,53 @@
+<interfaceDefinition>
+    <node name="mutually-dependant-children">
+        <children>
+            <node name="mutually-dependant-children-dual">
+                <properties>
+                    <childSpecification>
+                        <mutuallyDependantChildren>
+                            <child>mutually-dependant-children-dual-1</child>
+                            <child>mutually-dependant-children-dual-2</child>
+                        </mutuallyDependantChildren>
+                    </childSpecification>
+                </properties>
+                <children><leafNode name="placeholder"></leafNode></children>
+            </node>
+            <node name="mutually-dependant-children-multi-groups">
+                <properties>
+                    <childSpecification>
+                        <mutuallyDependantChildren>
+                            <child>mutually-dependant-children-multi-groups-1.1</child>
+                            <child>mutually-dependant-children-multi-groups-1.2</child>
+                        </mutuallyDependantChildren>
+                        <mutuallyDependantChildren>
+                            <child>mutually-dependant-children-multi-groups-2.1</child>
+                            <child>mutually-dependant-children-multi-groups-2.2</child>
+                        </mutuallyDependantChildren>
+                    </childSpecification>
+                </properties>
+                <children><leafNode name="placeholder"></leafNode></children>
+            </node>
+            <node name="mutually-dependant-children-multi-level">
+                <properties>
+                    <childSpecification>
+                        <mutuallyDependantChildren>
+                            <child>mutually-dependant-children-multi-level-1.1</child>
+                            <child>mutually-dependant-children-multi-level-1.2</child>
+                            <descendant name="mutually-dependant-children-multi-level-2">
+                                <child>mutually-dependant-children-multi-level-2-2.1</child>
+                                <child>mutually-dependant-children-multi-level-2-2.2</child>
+                            </descendant>
+                            <descendant name="mutually-dependant-children-multi-level-3">
+                                <descendant name="mutually-dependant-children-multi-level-3-3">
+                                    <child>mutually-dependant-children-multi-level-3-3-3.1</child>
+                                    <child>mutually-dependant-children-multi-level-3-3-3.2</child>
+                                </descendant>
+                            </descendant>
+                        </mutuallyDependantChildren>
+                    </childSpecification>
+                </properties>
+                <children><leafNode name="placeholder"></leafNode></children>
+            </node>
+        </children>
+    </node>
+</interfaceDefinition>
